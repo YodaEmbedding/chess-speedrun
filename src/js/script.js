@@ -8,6 +8,11 @@ const sanToRankFile = (square) => {
   return [rank, file];
 };
 
+const rankToRow = (rank) => 7 - rank;
+const rowToRank = (row) => 7 - row;
+const fileToCol = (file) => file;
+const colToFile = (col) => col;
+
 class Boards {
   constructor() {
     const pieces = ["P", "N", "B", "R", "Q", "K"];
@@ -16,9 +21,25 @@ class Boards {
 
   push(piece, square) {
     const [rank, file] = sanToRankFile(square);
-    this.boards[piece][rank][file] += 1;
+    this.boards[piece][rankToRow(rank)][fileToCol(file)] += 1;
   }
 }
+
+const renderCell = (cell, rank, file) => {
+  const parity = (rank + file) % 2;
+  const squareType = cell > 0 ? "completed" : parity === 0 ? "dark" : "light";
+  return `<td class="square square-${squareType}"></td>`;
+};
+
+const renderRow = (row, rank) =>
+  `<tr>\n${row
+    .map((x, i) => renderCell(x, rank, colToFile(i)))
+    .join("\n")}\n</tr>`;
+
+const renderBoard = (board) =>
+  `<table class="board">\n<tbody>\n${board
+    .map((x, i) => renderRow(x, rowToRank(i)))
+    .join("\n")}\n</tbody>\n</table>`;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -47,6 +68,29 @@ const lichessExportGames = async (userId, queryParams) => {
 
   return games;
 };
+
+async function* generateGames(userId, startTime) {
+  let lastCreatedAt = startTime;
+
+  // while (true) {
+  for (let i = 0; i < 1; i += 1) {
+    const queryParams = { since: lastCreatedAt };
+    const games = await lichessExportGames(userId, queryParams);
+
+    if (games.length === 0) {
+      await sleep(POLL_RATE);
+      continue;
+    }
+
+    lastCreatedAt = Math.max(...games.map((x) => x.createdAt));
+
+    for (const game of games) {
+      yield game;
+    }
+
+    await sleep(POLL_RATE);
+  }
+}
 
 const getPlayerColor = (game, userId) =>
   game.players.white.user.id === userId
@@ -92,45 +136,43 @@ const convertMoveToDestination = (move, color) => {
   throw new Error(`Cannot parse move ${move}.`);
 };
 
+const updateBoards = (boards, game, color) => {
+  getPlayerMoves(game, color)
+    .map((move) => convertMoveToDestination(move, color))
+    .forEach((x) => boards.push(x.piece, x.square));
+};
+
+const refreshBoards = (boards) => {
+  const pieces = ["P", "N", "B", "R", "Q", "K"];
+  const boardWrappers = document.getElementsByClassName("board-wrapper");
+  pieces.forEach((piece, i) => {
+    const wrapper = boardWrappers[i];
+    const board = boards.boards[piece];
+    wrapper.innerHTML = renderBoard(board);
+  });
+};
+
 const main = async () => {
   const userId = "sicariusnoctis";
-  let lastCreatedAt = 1620542213419;
-
+  const startTime = 1620542213419;
   const boards = new Boards();
 
-  // while (true) {
-  for (let i = 0; i < 2; i += 1) {
-    const queryParams = { since: lastCreatedAt };
-    const games = await lichessExportGames(userId, queryParams);
+  for await (const game of generateGames(userId, startTime)) {
+    console.log(game);
 
-    if (games.length === 0) {
-      await sleep(POLL_RATE);
-      continue;
-    }
-
-    lastCreatedAt = Math.max(...games.map((x) => x.createdAt));
-
-    const destinations = games.flatMap((game) => {
-      const color = getPlayerColor(game, userId);
-      const moves = getPlayerMoves(game, color);
-      return moves.map((move) => convertMoveToDestination(move, color));
-    });
-
-    destinations.forEach((x) => boards.push(x.piece, x.square));
-
-    games.forEach((x) => console.log(x));
-    console.log(destinations.map((x) => `${x.piece}${x.square}`).join(" "));
-    console.log(boards.boards);
-
-    await sleep(POLL_RATE);
+    const color = getPlayerColor(game, userId);
+    updateBoards(boards, game, color);
+    refreshBoards(boards);
   }
 };
 
-main();
+window.onload = main;
 
 // TODO UI: boards display
 // TODO UI: userId, startTime
 // TODO UI: start, stop, refresh, "auto-refresh" toggle switch
+// TODO UI: progress bars
+// TODO UI: flip boards icon button
 // TODO refactor: loop
 // TODO lichess: rate-limit
 // TODO lichess: Get real-time users status (for quick check)

@@ -1,0 +1,29 @@
+.board-wrapper {
+  display: inline-block;
+}
+
+.board {
+  border-collapse: collapse;
+  border: solid #693 1px;
+}
+
+.square {
+  --side: 40px;
+  width: var(--side);
+  height: var(--side);
+  min-width: var(--side);
+  min-height: var(--side);
+}
+
+.square-dark {
+  background-color: #272727;
+}
+
+.square-light {
+  background-color: #474747;
+}
+
+.square-completed {
+  background-color: #693;
+  box-shadow: inset 0 0 0 1px #582;
+}

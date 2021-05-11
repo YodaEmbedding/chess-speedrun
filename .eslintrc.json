@@ -14,6 +14,12 @@
     "no-constant-condition": "off",
     "no-continue": "off",
     "no-nested-ternary": "off",
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement"
+    ],
     "no-underscore-dangle": ["error", { "allowAfterThis": true }]
   }
 }
