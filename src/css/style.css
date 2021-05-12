@@ -1,6 +1,25 @@
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
 .boards {
   display: flex;
   flex-wrap: wrap;
+  width: 80%;
+  margin: 0 auto;
   justify-content: space-around;
   border: solid white 1px;
 }
