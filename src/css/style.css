@@ -1,10 +1,21 @@
+.boards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  border: solid white 1px;
+}
+
 .board-wrapper {
-  display: inline-block;
+  flex-basis: 25%;
+  display: block;
+  margin: 20px;
+  border: solid gray 1px;
 }
 
 .board {
   border-collapse: collapse;
   border: solid #693 1px;
+  margin: auto;
 }
 
 .square {
