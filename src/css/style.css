@@ -18,30 +18,30 @@ body {
 .boards {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-around;
   width: 80%;
   margin: 0 auto;
-  justify-content: space-around;
   border: solid white 1px;
 }
 
 .board-wrapper {
-  flex-basis: 25%;
   display: block;
+  flex-basis: 25%;
   margin: 20px;
   border: solid gray 1px;
 }
 
 .board {
+  margin: auto;
   border-collapse: collapse;
   border: solid #693 1px;
-  margin: auto;
 }
 
 .square {
   --side: 40px;
   width: var(--side);
-  height: var(--side);
   min-width: var(--side);
+  height: var(--side);
   min-height: var(--side);
 }
 
