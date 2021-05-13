@@ -1,5 +1,14 @@
 const POLL_RATE = 10000;
 
+const PIECE_NAMES = {
+  P: "♟ Pawn",
+  N: "♞ Knight",
+  B: "♝ Bishop",
+  R: "♜ Rook",
+  Q: "♛ Queen",
+  K: "♚ King",
+};
+
 const makeBoard = () => [...new Array(8)].map(() => new Array(8).fill(0));
 
 const sanToRankFile = (square) => {
@@ -36,10 +45,12 @@ const renderRow = (row, rank) =>
     .map((x, i) => renderCell(x, rank, colToFile(i)))
     .join("\n")}\n</tr>`;
 
-const renderBoard = (board) =>
+const renderBoard = (board, piece) =>
   `<table class="board">\n<tbody>\n${board
     .map((x, i) => renderRow(x, rowToRank(i)))
-    .join("\n")}\n</tbody>\n</table>`;
+    .join("\n")}\n</tbody>\n</table>\n<div class="piece-name">${
+    PIECE_NAMES[piece]
+  }</div>`;
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -148,7 +159,7 @@ const refreshBoards = (boards) => {
   pieces.forEach((piece, i) => {
     const wrapper = boardWrappers[i];
     const board = boards.boards[piece];
-    wrapper.innerHTML = renderBoard(board);
+    wrapper.innerHTML = renderBoard(board, piece);
   });
 };
 
