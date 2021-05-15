@@ -32,6 +32,29 @@ class Boards {
     const [rank, file] = sanToRankFile(square);
     this.boards[piece][rankToRow(rank)][fileToCol(file)] += 1;
   }
+
+  update(game, color) {
+    getPlayerMoves(game, color)
+      .map((move) => convertMoveToDestination(move, color))
+      .forEach((x) => this.push(x.piece, x.square));
+  }
+}
+
+class Stats {
+  constructor() {
+    this.gamesPlayed = 0;
+    this.progress = 0;
+    this.timeElapsed = 0;
+  }
+
+  update(game, boards) {
+    const squares = Object.values(boards.boards).flat(2);
+    const progress = squares.filter((x) => x > 0).length / squares.length;
+    console.log(squares);
+    this.gamesPlayed += 1;
+    this.progress = progress;
+    this.timeElapsed += game.clock.totalTime;
+  }
 }
 
 const renderCell = (cell, rank, file) => {
@@ -110,13 +133,13 @@ const getPlayerColor = (game, userId) =>
     ? "black"
     : null;
 
-const getPlayerMoves = (game, color) => {
+function getPlayerMoves(game, color) {
   const parity = { white: 0, black: 1 }[color];
   const moves = game.moves.split(" ");
   return moves.filter((_, i) => i % 2 === parity);
-};
+}
 
-const convertMoveToDestination = (move, color) => {
+function convertMoveToDestination(move, color) {
   // NOTE: Test cases: O-O# O-O-O++ Raxe1+ e8=Q dxc3 Nbd2 N@c3 @c2.
 
   if (color !== "white" && color !== "black")
@@ -145,12 +168,19 @@ const convertMoveToDestination = (move, color) => {
   }
 
   throw new Error(`Cannot parse move ${move}.`);
-};
+}
 
-const updateBoards = (boards, game, color) => {
-  getPlayerMoves(game, color)
-    .map((move) => convertMoveToDestination(move, color))
-    .forEach((x) => boards.push(x.piece, x.square));
+const intToStr = (x) =>
+  x.toLocaleString(undefined, { minimumIntegerDigits: 2 });
+
+const formatHHMMSS = (seconds) => {
+  let s = seconds;
+  const hh = Math.floor(s / 3600);
+  s %= 3600;
+  const mm = Math.floor(s / 60);
+  s %= 60;
+  const ss = Math.floor(s);
+  return `${intToStr(hh)}:${intToStr(mm)}:${intToStr(ss)}`;
 };
 
 const refreshBoards = (boards) => {
@@ -163,17 +193,35 @@ const refreshBoards = (boards) => {
   });
 };
 
+const refreshStats = (stats) => {
+  const totalProgress = document.getElementById("total-progress");
+  const gamesPlayed = document.getElementById("games-played");
+  const timeTaken = document.getElementById("time-taken");
+  const timeElapsedStr = formatHHMMSS(stats.timeElapsed);
+
+  totalProgress.style.width = `${stats.progress * 100}%`;
+  gamesPlayed.innerText = `Games played: ${stats.gamesPlayed}`;
+  timeTaken.innerText = `Time taken: ${timeElapsedStr}`;
+};
+
 const main = async () => {
   const userId = "sicariusnoctis";
-  const startTime = 1620542213419;
+  const startTime = 1620988162970;
   const boards = new Boards();
+  const stats = new Stats();
+
+  refreshBoards(boards);
+  refreshStats(stats);
 
   for await (const game of generateGames(userId, startTime)) {
     console.log(game);
 
     const color = getPlayerColor(game, userId);
-    updateBoards(boards, game, color);
+    boards.update(game, color);
+    stats.update(game, boards);
+
     refreshBoards(boards);
+    refreshStats(stats);
   }
 };
 
