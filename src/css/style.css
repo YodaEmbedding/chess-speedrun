@@ -3,42 +3,45 @@ html {
 }
 
 body {
+  font-family: "Noto Sans", sans-serif;
   height: 100%;
   margin: 0;
   padding: 0;
+  color: #ffffff;
+  background: #161512;
 }
 
-.container {
+.outer {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
 }
 
+.app {
+  width: 1000px;
+}
+
 .boards {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
-  width: 80%;
   margin: 0 auto;
-  border: solid white 1px;
 }
 
 .board-wrapper {
   display: block;
-  flex-basis: 25%;
   margin: 20px;
-  border: solid gray 1px;
 }
 
 .board {
   margin: auto;
   border-collapse: collapse;
-  border: solid #693 1px;
+  border: solid #669933 1px;
 }
 
 .square {
-  --side: 40px;
+  --side: 30px;
   width: var(--side);
   min-width: var(--side);
   height: var(--side);
@@ -54,15 +57,72 @@ body {
 }
 
 .square-completed {
-  background-color: #693;
-  box-shadow: inset 0 0 0 1px #582;
+  background-color: #669933;
+  box-shadow: inset 0 0 0 1px #558822;
 }
 
 .piece-name {
-  font-family: "Noto Sans", sans-serif;
   font-size: 20px;
   font-weight: 900;
   padding: 20px;
   text-align: center;
-  color: #666;
+  color: #666666;
+}
+
+.bottom-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 40px;
+}
+
+.stats {
+}
+
+.progress {
+}
+
+.stat-text {
+  font-size: 20px;
+  color: #999999;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+}
+
+.controls-row {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 5px 0;
+  padding: 0 10px;
+}
+
+.controls-row .button {
+  width: 150px;
+  margin: 3px 0;
+}
+
+.controls-row .input-text {
+  flex: 1;
+  margin: 3px 10px;
+}
+
+.button {
+  padding: 8px;
+  color: #cccccc;
+  border: none;
+  border-radius: 10px;
+  background: #161512 linear-gradient(to bottom, #2e2a24, #161512 116px)
+    no-repeat;
+}
+
+.input-text {
+  font-size: 18px;
+  padding: 8px;
+  text-align: center;
+  color: #888888;
+  border: solid 2px #333333;
+  border-radius: 20px;
+  background-color: #222222;
 }

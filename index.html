@@ -10,14 +10,36 @@
 
   <body>
     <script src="src/js/script.js"></script>
-    <div class="container">
-      <div class="boards">
-        <div class="board-wrapper"></div>
-        <div class="board-wrapper"></div>
-        <div class="board-wrapper"></div>
-        <div class="board-wrapper"></div>
-        <div class="board-wrapper"></div>
-        <div class="board-wrapper"></div>
+    <div class="outer">
+      <div class="app">
+        <div class="boards">
+          <div class="board-wrapper"></div>
+          <div class="board-wrapper"></div>
+          <div class="board-wrapper"></div>
+          <div class="board-wrapper"></div>
+          <div class="board-wrapper"></div>
+          <div class="board-wrapper"></div>
+        </div>
+        <div class="bottom-panel">
+          <div class="stats">
+            <div class="progress" id="total-progress"></div>
+            <div class="stat-text" id="game-counter">Games played: 0</div>
+            <div class="stat-text" id="total-time">Time taken: 00:00:00</div>
+          </div>
+          <div class="controls">
+            <div class="controls-row">
+              <input class="input-text" id="username" type="text" />
+            </div>
+            <div class="controls-row">
+              <input class="input-text" id="start-date" type="date" />
+              <input class="input-text" id="start-time" type="time" step="1" />
+            </div>
+            <div class="controls-row">
+              <button class="button" id="btn-start-stop">Start</button>
+              <button class="button" id="btn-refresh">Refresh</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </body>
