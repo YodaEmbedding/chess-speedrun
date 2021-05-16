@@ -103,8 +103,8 @@ const lichessExportGames = async (userId, queryParams) => {
   return games;
 };
 
-async function* generateGames(userId, startTime) {
-  let lastCreatedAt = startTime;
+async function* generateGames(userId, startUtcTimestamp) {
+  let lastCreatedAt = startUtcTimestamp;
 
   // while (true) {
   for (let i = 0; i < 1; i += 1) {
@@ -204,16 +204,11 @@ const refreshStats = (stats) => {
   timeTaken.innerText = `Time taken: ${timeElapsedStr}`;
 };
 
-const main = async () => {
-  const userId = "sicariusnoctis";
-  const startTime = 1620988162970;
+const runMainLoop = async (userId, startUtcTimestamp) => {
   const boards = new Boards();
   const stats = new Stats();
 
-  refreshBoards(boards);
-  refreshStats(stats);
-
-  for await (const game of generateGames(userId, startTime)) {
+  for await (const game of generateGames(userId, startUtcTimestamp)) {
     console.log(game);
 
     const color = getPlayerColor(game, userId);
@@ -225,14 +220,58 @@ const main = async () => {
   }
 };
 
+const initForms = () => {
+  const startDateInput = document.getElementById("start-date");
+  const startTimeInput = document.getElementById("start-time");
+
+  const tzOffset = new Date().getTimezoneOffset() * 60 * 1000;
+  const localISOString = new Date(Date.now() - tzOffset).toISOString();
+  const date = localISOString.substring(0, 10);
+  const time = localISOString.substring(11, 16);
+
+  startDateInput.value = date;
+  startTimeInput.value = time;
+};
+
+const getFormData = () => {
+  const userId = document.getElementById("username").value;
+  const startDate = document.getElementById("start-date").value;
+  const startTime = document.getElementById("start-time").value;
+
+  const startDatetime = new Date(`${startDate} ${startTime}`);
+  const startUtcTimestamp = startDatetime.getTime();
+
+  return [userId, startUtcTimestamp];
+};
+
+let isRunning = false;
+
+const onStartClick = () => {
+  if (isRunning) {
+    return;
+  }
+
+  isRunning = true;
+  const startButton = document.getElementById("btn-start-stop");
+  startButton.style = "opacity: 25%;";
+
+  const [userId, startUtcTimestamp] = getFormData();
+  runMainLoop(userId, startUtcTimestamp);
+}
+
+const main = () => {
+  initForms();
+  refreshBoards(new Boards());
+  refreshStats(new Stats());
+
+  const startButton = document.getElementById("btn-start-stop");
+  startButton.addEventListener("click", onStartClick, false);
+};
+
 window.onload = main;
 
-// TODO UI: boards display
-// TODO UI: userId, startTime
-// TODO UI: start, stop, refresh, "auto-refresh" toggle switch
-// TODO UI: progress bars
+// TODO UI: buttons for refresh, "auto-refresh" toggle switch
 // TODO UI: flip boards icon button
-// TODO refactor: loop
 // TODO lichess: rate-limit
 // TODO lichess: Get real-time users status (for quick check)
 // TODO lichess: Export ongoing game of a user
