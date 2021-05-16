@@ -106,8 +106,7 @@ const lichessExportGames = async (userId, queryParams) => {
 async function* generateGames(userId, startUtcTimestamp) {
   let lastCreatedAt = startUtcTimestamp;
 
-  // while (true) {
-  for (let i = 0; i < 1; i += 1) {
+  while (true) {
     const queryParams = { since: lastCreatedAt };
     const games = await lichessExportGames(userId, queryParams);
 
