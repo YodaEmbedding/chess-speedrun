@@ -52,7 +52,6 @@ class Stats {
   update(game, boards) {
     const squares = Object.values(boards.boards).flat(2);
     const progress = squares.filter((x) => x > 0).length / squares.length;
-    console.log(squares);
     this.gamesPlayed += 1;
     this.progress = progress;
     this.timeElapsed += game.clock.totalTime;
@@ -80,8 +79,6 @@ const renderBoard = (board, piece) =>
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const lichessExportGames = async (userId, queryParams) => {
-  console.log("lichessExportGames()");
-
   const baseUrl = "https://lichess.org/api/games/user/";
   const params = new URLSearchParams(queryParams);
   const response = await fetch(`${baseUrl}${userId}?${params}`, {
@@ -215,7 +212,7 @@ const runMainLoop = async (userId, startUtcTimestamp) => {
   const stats = new Stats();
 
   for await (const game of generateGames(userId, startUtcTimestamp)) {
-    console.log(game);
+    console.debug(game);
 
     const color = getPlayerColor(game, userId);
     boards.update(game, color);
