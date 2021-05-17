@@ -260,7 +260,7 @@ const initForms = () => {
 };
 
 const getFormData = () => {
-  const userId = document.getElementById("username").value;
+  const userId = document.getElementById("username").value.toLowerCase();
   const startDate = document.getElementById("start-date").value;
   const startTime = document.getElementById("start-time").value;
 
