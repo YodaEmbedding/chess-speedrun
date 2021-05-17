@@ -1,3 +1,7 @@
+:root {
+  --side: 30px;
+}
+
 html {
   height: 100%;
 }
@@ -19,7 +23,7 @@ body {
 }
 
 .app {
-  width: 1000px;
+  width: 1050px;
 }
 
 .boards {
@@ -40,7 +44,6 @@ body {
 }
 
 .square {
-  --side: 30px;
   width: var(--side);
   min-width: var(--side);
   height: var(--side);
@@ -58,6 +61,25 @@ body {
 .square-completed {
   background-color: #669933;
   box-shadow: inset 0 0 0 1px #558822;
+}
+
+.coordinate-label {
+  font-size: 14px;
+  text-align: center;
+  vertical-align: middle;
+  color: #666666;
+}
+
+.coordinate-label__file {
+  width: var(--side);
+  min-width: var(--side);
+  padding: 2px 0;
+}
+
+.coordinate-label__rank {
+  height: var(--side);
+  min-height: var(--side);
+  padding: 0 2px;
 }
 
 .piece-name {

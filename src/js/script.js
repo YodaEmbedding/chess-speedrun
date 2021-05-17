@@ -13,6 +13,11 @@ const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
 
 const makeBoard = () => [...new Array(8)].map(() => new Array(8).fill(0));
 
+const fileToStr = (file) => String.fromCharCode(file + "a".charCodeAt(0));
+const rankToStr = (rank) => String.fromCharCode(rank + "1".charCodeAt(0));
+const strToFile = (file) => file.charCodeAt(0) - "a".charCodeAt(0);
+const strToRank = (rank) => rank.charCodeAt(0) - "1".charCodeAt(0);
+
 const sanToRankFile = (square) => {
   const file = square.charCodeAt(0) - "a".charCodeAt(0);
   const rank = square.charCodeAt(1) - "1".charCodeAt(0);
@@ -64,17 +69,35 @@ const renderCell = (cell, rank, file) => {
   return `<td class="square square-${squareType}"></td>`;
 };
 
-const renderRow = (row, rank) =>
-  `<tr>\n${row
-    .map((x, i) => renderCell(x, rank, colToFile(i)))
-    .join("\n")}\n</tr>`;
+const renderCoordinateLabel = (label, elementType) =>
+  `<td class="coordinate-label coordinate-label__${elementType}">${label}</td>`;
 
-const renderBoard = (board, piece) =>
-  `<table class="board">\n<tbody>\n${board
-    .map((x, i) => renderRow(x, rowToRank(i)))
-    .join("\n")}\n</tbody>\n</table>\n<div class="piece-name">${
-    PIECE_NAMES[piece]
-  }</div>`;
+const renderRow = (row, rank) => {
+  const rankStr = renderCoordinateLabel(rankToStr(rank), "rank");
+  const cells = row.map((x, i) => renderCell(x, rank, colToFile(i)));
+  const contents = [...cells, rankStr].join("\n");
+  return `<tr>\n${contents}\n</tr>`;
+};
+
+const renderCoordinatesFiles = () => {
+  const fileLabels = Array.from(Array(8), (_, i) => fileToStr(i));
+  const fileStrs = fileLabels.map((label) =>
+    renderCoordinateLabel(label, "file")
+  );
+  const emptyStr = renderCoordinateLabel("", "file");
+  const contents = [...fileStrs, emptyStr].join("\n");
+  return `<tr>\n${contents}\n</tr>`;
+};
+
+const renderBoard = (board, piece) => {
+  const filesStr = renderCoordinatesFiles();
+  const rows = board.map((x, i) => renderRow(x, rowToRank(i)));
+  const contents = [...rows, filesStr].join("\n");
+  const header = '<table class="board">\n<tbody>\n';
+  const footer = "\n</tbody>\n</table>\n";
+  const title = `<div class="piece-name">${PIECE_NAMES[piece]}</div>`;
+  return `${header}${contents}${footer}${title}`;
+};
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
