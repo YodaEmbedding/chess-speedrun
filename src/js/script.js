@@ -256,7 +256,7 @@ const onStartClick = () => {
 
   const [userId, startUtcTimestamp] = getFormData();
   runMainLoop(userId, startUtcTimestamp);
-}
+};
 
 const main = () => {
   initForms();
