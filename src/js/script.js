@@ -9,6 +9,8 @@ const PIECE_NAMES = {
   K: "♚ King",
 };
 
+const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
+
 const makeBoard = () => [...new Array(8)].map(() => new Array(8).fill(0));
 
 const sanToRankFile = (square) => {
@@ -118,6 +120,10 @@ async function* generateGames(userId, startUtcTimestamp) {
     lastCreatedAt = Math.max(...games.map((x) => x.createdAt));
 
     for (const game of games) {
+      if (game.speed == "correspondence") continue;
+      if (!hasOwn(game, "clock")) continue;
+      if (!hasOwn(game.clock, "totalTime")) continue;
+
       yield game;
     }
 
@@ -126,9 +132,10 @@ async function* generateGames(userId, startUtcTimestamp) {
 }
 
 const getPlayerColor = (game, userId) =>
-  game.players.white.user.id === userId
+  hasOwn(game.players.white, "user") && game.players.white.user.id === userId
     ? "white"
-    : game.players.black.user.id === userId
+    : hasOwn(game.players.black, "user") &&
+      game.players.black.user.id === userId
     ? "black"
     : null;
 
