@@ -140,7 +140,7 @@ async function* generateGames(userId, startUtcTimestamp) {
     lastCreatedAt = Math.max(...games.map((x) => x.createdAt));
 
     for (const game of games) {
-      if (game.speed == "correspondence") continue;
+      if (game.speed === "correspondence") continue;
       if (!hasOwn(game, "clock")) continue;
       if (!hasOwn(game.clock, "totalTime")) continue;
 
