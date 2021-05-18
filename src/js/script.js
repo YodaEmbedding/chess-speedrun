@@ -129,7 +129,7 @@ async function* generateGames(userId, startUtcTimestamp) {
   let lastCreatedAt = startUtcTimestamp;
 
   while (true) {
-    const queryParams = { since: lastCreatedAt };
+    const queryParams = { since: lastCreatedAt, pgnInJson: true, clocks: true };
     const games = await lichessExportGames(userId, queryParams);
 
     if (games.length === 0) {
@@ -151,14 +151,56 @@ async function* generateGames(userId, startUtcTimestamp) {
   }
 }
 
+/** Parses the PGN to extract { [%clk hh:mm:ss] } annotations. */
+function parsePgnClocks(game) {
+  const pattern = /%clk (?<hh>\d{1,2}):(?<mm>\d{1,2}):(?<ss>\d{1,2})/g;
+  const times = [...game.pgn.matchAll(pattern)]
+    .map((x) => x.groups)
+    .map((x) => ({
+      hh: parseInt(x.hh, 10),
+      mm: parseInt(x.mm, 10),
+      ss: parseInt(x.ss, 10),
+    }))
+    .map((x) => x.hh * 60 * 60 + x.mm * 60 + x.ss);
+
+  const startWhite = times[0];
+  const startBlack = times[1];
+
+  const finalTimes = times.slice(-2);
+  const finalWhite = finalTimes[times.length % 2];
+  const finalBlack = finalTimes[(times.length + 1) % 2];
+
+  const bonusWhite = 0;
+  const bonusBlack = 0;
+
+  const elapsedWhite = startWhite - finalWhite + bonusWhite;
+  const elapsedBlack = startBlack - finalBlack + bonusBlack;
+
+  return { white: elapsedWhite, black: elapsedBlack };
+
+  // TODO handle cases where game ends too early
+  // TODO handle increment
+  // TODO get initial clock times (especially for berserk)
+  // TODO correctly handle case where a player times out
+}
+
 /** Obtain elapsed time.
 
 * This can be customized for specific speedrun requirements.
 */
 function getElapsedTime(game, color) {
+  // Method 1:
+  // Unfortunately, lichess does not give precise clocks for this method.
   // return game.clock.totalTime;
-
-  return (game.lastMoveAt - game.createdAt) / 1000;
+  //
+  // Method 2:
+  // Slightly more precise.
+  // return (game.lastMoveAt - game.createdAt) / 1000;
+  //
+  // Method 3:
+  // This method parses the PGN to extract { [%clk hh:mm:ss] } annotations.
+  const elapsed = parsePgnClocks(game);
+  return elapsed.white + elapsed.black;
 }
 
 const getPlayerColor = (game, userId) =>
