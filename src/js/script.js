@@ -1,12 +1,12 @@
 const POLL_RATE = 10000;
 
 const PIECE_NAMES = {
-  P: "♟ Pawn",
-  N: "♞ Knight",
-  B: "♝ Bishop",
-  R: "♜ Rook",
-  Q: "♛ Queen",
-  K: "♚ King",
+  P: "Pawn ♟",
+  N: "Knight ♞",
+  B: "Bishop ♝",
+  R: "Rook ♜",
+  Q: "Queen ♛",
+  K: "King ♚",
 };
 
 const hasOwn = Function.prototype.call.bind(Object.prototype.hasOwnProperty);
