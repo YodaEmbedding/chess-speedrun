@@ -1,5 +1,11 @@
 :root {
   --side: 30px;
+  --color-background: #161512;
+  --color-highlight: #669933;
+  --color-highlight-darker: #558822;
+  --color-square-dark: #272727;
+  --color-square-light: #474747;
+  --color-text: #888888;
 }
 
 html {
@@ -12,7 +18,7 @@ body {
   margin: 0;
   padding: 0;
   color: #ffffff;
-  background: #161512;
+  background: var(--color-background);
 }
 
 .outer {
@@ -51,23 +57,23 @@ body {
 }
 
 .square-dark {
-  background-color: #272727;
+  background-color: var(--color-square-dark);
 }
 
 .square-light {
-  background-color: #474747;
+  background-color: var(--color-square-light);
 }
 
 .square-completed {
-  background-color: #669933;
-  box-shadow: inset 0 0 0 1px #558822;
+  background-color: var(--color-highlight);
+  box-shadow: inset 0 0 0 1px var(--color-highlight-darker);
 }
 
 .coordinate-label {
   font-size: 14px;
   text-align: center;
   vertical-align: middle;
-  color: #888888;
+  color: var(--color-text);
 }
 
 .coordinate-label__file {
@@ -87,7 +93,7 @@ body {
   font-weight: 900;
   padding: 3px;
   text-align: center;
-  color: #888888;
+  color: var(--color-text);
 }
 
 .bottom-panel {
@@ -127,12 +133,12 @@ body {
   width: 0;
   height: 100%;
   border-radius: 9999px;
-  background-color: #669933;
+  background-color: var(--color-highlight);
 }
 
 .stat-text {
   font-size: 20px;
-  color: #888888;
+  color: var(--color-text);
 }
 
 .controls {
