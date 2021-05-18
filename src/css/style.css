@@ -67,7 +67,7 @@ body {
   font-size: 14px;
   text-align: center;
   vertical-align: middle;
-  color: #666666;
+  color: #888888;
 }
 
 .coordinate-label__file {
@@ -87,7 +87,7 @@ body {
   font-weight: 900;
   padding: 20px;
   text-align: center;
-  color: #666666;
+  color: #888888;
 }
 
 .bottom-panel {
