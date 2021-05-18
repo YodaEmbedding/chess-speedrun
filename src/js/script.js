@@ -288,8 +288,14 @@ const onStartClick = () => {
   }
 
   isRunning = true;
+
+  // Disable start button.
   const startButton = document.getElementById("btn-start-stop");
-  startButton.style = "opacity: 25%;";
+  startButton.disabled = true;
+
+  // Hide controls.
+  // const controls = document.getElementById("controls");
+  // controls.style.display = "none";
 
   const [userId, startUtcTimestamp] = getFormData();
   runMainLoop(userId, startUtcTimestamp);

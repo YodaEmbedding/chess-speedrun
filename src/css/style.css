@@ -164,6 +164,16 @@ body {
     no-repeat;
 }
 
+.button:hover:enabled {
+  color: #999999;
+  background: #262522 linear-gradient(to bottom, #3e3a34, #262522 116px)
+    no-repeat;
+}
+
+.button:disabled {
+  opacity: 25%;
+}
+
 .input-text {
   font-size: 18px;
   padding: 8px;
