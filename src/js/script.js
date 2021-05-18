@@ -121,6 +121,7 @@ const lichessExportGames = async (userId, queryParams) => {
   const text = await response.text();
   const lines = text.trim().split("\n");
   const games = lines.filter((x) => x !== "").map(JSON.parse);
+  games.reverse();
 
   return games;
 };
