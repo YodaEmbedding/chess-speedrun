@@ -54,12 +54,12 @@ class Stats {
     this.timeElapsed = 0;
   }
 
-  update(game, boards) {
+  update(game, boards, color) {
     const squares = Object.values(boards.boards).flat(2);
     const progress = squares.filter((x) => x > 0).length / squares.length;
     this.gamesPlayed += 1;
     this.progress = progress;
-    this.timeElapsed += game.clock.totalTime;
+    this.timeElapsed += getElapsedTime(game, color);
   }
 }
 
@@ -151,6 +151,16 @@ async function* generateGames(userId, startUtcTimestamp) {
   }
 }
 
+/** Obtain elapsed time.
+
+* This can be customized for specific speedrun requirements.
+*/
+function getElapsedTime(game, color) {
+  // return game.clock.totalTime;
+
+  return (game.lastMoveAt - game.createdAt) / 1000;
+}
+
 const getPlayerColor = (game, userId) =>
   hasOwn(game.players.white, "user") && game.players.white.user.id === userId
     ? "white"
@@ -239,7 +249,7 @@ const runMainLoop = async (userId, startUtcTimestamp) => {
 
     const color = getPlayerColor(game, userId);
     boards.update(game, color);
-    stats.update(game, boards);
+    stats.update(game, boards, color);
 
     refreshBoards(boards);
     refreshStats(stats);
