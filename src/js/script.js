@@ -162,21 +162,29 @@ function parsePgnClocks(game) {
       ss: parseInt(x.ss, 10),
     }))
     .map((x) => x.hh * 60 * 60 + x.mm * 60 + x.ss);
+  const plies = times.length;
+
+  if (plies < 2) return { white: 0, black: 0 };
 
   const startWhite = times[0];
   const startBlack = times[1];
 
   const finalTimes = times.slice(-2);
-  const finalWhite = finalTimes[times.length % 2];
-  const finalBlack = finalTimes[(times.length + 1) % 2];
+  const finalWhite = finalTimes[plies % 2];
+  const finalBlack = finalTimes[(plies + 1) % 2];
 
-  const bonusWhite = 0;
-  const bonusBlack = 0;
+  const whiteIncrement = game.clock.increment;
+  const blackIncrement = game.clock.increment;
+  const numWhiteMoves = Math.floor((plies + 1) / 2);
+  const numBlackMoves = Math.floor(plies / 2);
+  const bonusWhite = numWhiteMoves * whiteIncrement;
+  const bonusBlack = numBlackMoves * blackIncrement;
 
   const elapsedWhite = startWhite - finalWhite + bonusWhite;
   const elapsedBlack = startBlack - finalBlack + bonusBlack;
 
-  return { white: elapsedWhite, black: elapsedBlack };
+  const elapsed = { white: elapsedWhite, black: elapsedBlack };
+  return elapsed;
 
   // TODO handle cases where game ends too early
   // TODO handle increment
