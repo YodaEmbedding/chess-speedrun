@@ -151,7 +151,10 @@ async function* generateGames(userId, startUtcTimestamp) {
   }
 }
 
-/** Parses the PGN to extract { [%clk hh:mm:ss] } annotations. */
+/** Determine total elapsed times for each player by parsing game PGN.
+
+  Parses the PGN to extract { [%clk hh:mm:ss] } annotations.
+  */
 function parsePgnClocks(game) {
   const pattern = /%clk (?<hh>\d{1,2}):(?<mm>\d{1,2}):(?<ss>\d{1,2})/g;
   const times = [...game.pgn.matchAll(pattern)]
@@ -164,32 +167,47 @@ function parsePgnClocks(game) {
     .map((x) => x.hh * 60 * 60 + x.mm * 60 + x.ss);
   const plies = times.length;
 
+  // Zero time elapsed if black did not play a move.
   if (plies < 2) return { white: 0, black: 0 };
 
+  // Determine start times.
   const startWhite = times[0];
   const startBlack = times[1];
 
-  const finalTimes = times.slice(-2);
-  const finalWhite = finalTimes[plies % 2];
-  const finalBlack = finalTimes[(plies + 1) % 2];
+  // Determine end times.
+  const endTimes = times.slice(-2);
+  const endWhite = endTimes[plies % 2];
+  const endBlack = endTimes[(plies + 1) % 2];
 
-  const whiteIncrement = game.clock.increment;
-  const blackIncrement = game.clock.increment;
+  // Determine increments per move.
+  // If berserk, do not increment.
+  const initialTime = game.clock.initial;
+  const whiteBerserk = startWhite * 2 === initialTime;
+  const blackBerserk = startBlack * 2 === initialTime;
+  const whiteIncrement = whiteBerserk ? 0 : game.clock.increment;
+  const blackIncrement = blackBerserk ? 0 : game.clock.increment;
+
+  // Determine total increment bonus.
+  // On lichess, first two plies do not add increment.
+  // Furthermore, if the final move ends the game abruptly
+  // without giving the opponent a chance to reply
+  // (e.g. mate, stalemate, fifty-move rule),
+  // then lichess does not apply increment to the clocks on that final move.
+  // If otherwise
+  // (e.g. resignation, draw offer, timeout),
+  // then the final move does indeed have increment applied.
+  // NOTE: For simplicity, we will assume extra increment.
   const numWhiteMoves = Math.floor((plies + 1) / 2);
   const numBlackMoves = Math.floor(plies / 2);
-  const bonusWhite = numWhiteMoves * whiteIncrement;
-  const bonusBlack = numBlackMoves * blackIncrement;
+  const bonusWhite = (numWhiteMoves - 1) * whiteIncrement;
+  const bonusBlack = (numBlackMoves - 1) * blackIncrement;
 
-  const elapsedWhite = startWhite - finalWhite + bonusWhite;
-  const elapsedBlack = startBlack - finalBlack + bonusBlack;
+  // Elapsed time is difference on clocks + increment bonus.
+  const elapsedWhite = startWhite - endWhite + bonusWhite;
+  const elapsedBlack = startBlack - endBlack + bonusBlack;
 
   const elapsed = { white: elapsedWhite, black: elapsedBlack };
   return elapsed;
-
-  // TODO handle cases where game ends too early
-  // TODO handle increment
-  // TODO get initial clock times (especially for berserk)
-  // TODO correctly handle case where a player times out
 }
 
 /** Obtain elapsed time.
