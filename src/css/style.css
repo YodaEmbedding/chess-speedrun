@@ -94,6 +94,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-gap: 40px;
+  align-items: center;
   padding: 20px;
 }
 
@@ -104,17 +105,19 @@ body {
 }
 
 .stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin: 5px 0;
   padding: 0 10px;
 }
 
 .stats-row--progress {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  grid-gap: 10px;
+  gap: 20px;
 }
 
 .progress-bar {
+  flex: 1;
   height: 20px;
   border-radius: 9999px;
   background-color: #555555;
